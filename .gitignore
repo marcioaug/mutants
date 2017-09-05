@@ -1,2 +1,4 @@
+*.json
 *.info
+output/
 openssl/ssl/methods_c/output/result.json
