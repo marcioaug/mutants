@@ -1,12 +1,4 @@
-/*
- * Copyright 2002-2017 The OpenSSL Project Authors. All Rights Reserved.
- * Copyright (c) 2002, Oracle and/or its affiliates. All rights reserved
- *
- * Licensed under the OpenSSL license (the "License").  You may not use
- * this file except in compliance with the License.  You can obtain a copy
- * in the file LICENSE in the source distribution or at
- * https://www.openssl.org/source/license.html
- */
+
 
 #include <assert.h>
 #include <limits.h>
@@ -26,7 +18,7 @@ static const BN_ULONG SQR_tb[16] = { 0, 1, 4, 5, 16, 17, 20, 21,
     64, 65, 68, 69, 80, 81, 84, 85
 };
 
-/* Platform-specific macros to accelerate squaring. */
+
 # ifdef THIRTY_TWO_BIT
 # if defined(SIXTY_FOUR_BIT) || defined(SIXTY_FOUR_BIT_LONG)
 #  define SQR1(w) \
@@ -109,7 +101,7 @@ static void bn_GF2m_mul_1x1(BN_ULONG *r1, BN_ULONG *r0, const BN_ULONG a,
     l ^= s << 30;
     h ^= s >> 2;
 
-    /* compensate for the top two bits of a */
+    
 
     if (top2b & 01) {
         l ^= b << 30;
@@ -222,11 +214,7 @@ static void bn_GF2m_mul_1x1(BN_ULONG *r1, BN_ULONG *r0, const BN_ULONG a,
 }
 #  endif
 
-/*
- * Product of two polynomials a, b each with degree < 2 * BN_BITS2 - 1,
- * result is a polynomial r with degree < 4 * BN_BITS2 - 1 The caller MUST
- * ensure that the variables have the right amount of space allocated.
- */
+
 static void bn_GF2m_mul_2x2(BN_ULONG *r, const BN_ULONG a1, const BN_ULONG a0,
                             const BN_ULONG b1, const BN_ULONG b0)
 {
@@ -235,9 +223,9 @@ static void bn_GF2m_mul_2x2(BN_ULONG *r, const BN_ULONG a1, const BN_ULONG a0,
     bn_GF2m_mul_1x1(r + 3, r + 2, a1, b1);
     bn_GF2m_mul_1x1(r + 1, r, a0, b0);
     bn_GF2m_mul_1x1(&m1, &m0, a0 ^ a1, b0 ^ b1);
-    /* Correction on m1 ^= l1 ^ h1; m0 ^= l0 ^ h0; */
+    
     r[2] ^= m1 ^ r[1] ^ r[3];   /* h0 ^= m1 ^ l1 ^ h1; */
-    r[1] = r[3] ^ r[2] ^ r[0] ^ m1 ^ m0; /* l1 ^= l0 ^ h0 ^ m0; */
+    r[1] = r[3] ^ r[2] ^ r[0] ^ m1 ^ m0; 
 }
 # else
 void bn_GF2m_mul_2x2(BN_ULONG *r, BN_ULONG a1, BN_ULONG a0, BN_ULONG b1,
@@ -280,12 +268,7 @@ int BN_GF2m_add(BIGNUM *r, const BIGNUM *a, const BIGNUM *b)
     return 1;
 }
 
-/*-
- * Some functions allow for representation of the irreducible polynomials
- * as an int[], say p.  The irreducible f(t) is then of the form:
- *     t^p[0] + t^p[1] + ... + t^p[k]
- * where m = p[0] > p[1] > ... > p[k] = 0.
- */
+
 
 /* Performs modular reduction of a and store result in r.  r could be a. */
 int BN_GF2m_mod_arr(BIGNUM *r, const BIGNUM *a, const int p[])
@@ -297,7 +280,7 @@ int BN_GF2m_mod_arr(BIGNUM *r, const BIGNUM *a, const int p[])
     bn_check_top(a);
 
     if (!p[0]) {
-        /* reduction mod 1 => return 0 */
+        
         BN_zero(r);
         return 1;
     }
@@ -316,7 +299,7 @@ int BN_GF2m_mod_arr(BIGNUM *r, const BIGNUM *a, const int p[])
     }
     z = r->d;
 
-    /* start reduction */
+    
     dN = p[0] / BN_BITS2;
     for (j = r->top - 1; j > dN;) {
         zz = z[j];
@@ -337,7 +320,7 @@ int BN_GF2m_mod_arr(BIGNUM *r, const BIGNUM *a, const int p[])
                 z[j - n - 1] ^= (zz << d1);
         }
 
-        /* reducing component t^0 */
+        
         n = dN;
         d0 = p[0] % BN_BITS2;
         d1 = BN_BITS2 - d0;
@@ -355,7 +338,7 @@ int BN_GF2m_mod_arr(BIGNUM *r, const BIGNUM *a, const int p[])
             break;
         d1 = BN_BITS2 - d0;
 
-        /* clear up the top d1 bits */
+        
         if (d0)
             z[dN] = (z[dN] << d1) >> d1;
         else
@@ -365,7 +348,7 @@ int BN_GF2m_mod_arr(BIGNUM *r, const BIGNUM *a, const int p[])
         for (k = 1; p[k] != 0; k++) {
             BN_ULONG tmp_ulong;
 
-            /* reducing component t^p[k] */
+            
             n = p[k] / BN_BITS2;
             d0 = p[k] % BN_BITS2;
             d1 = BN_BITS2 - d0;
@@ -402,10 +385,7 @@ int BN_GF2m_mod(BIGNUM *r, const BIGNUM *a, const BIGNUM *p)
     return ret;
 }
 
-/*
- * Compute the product of two polynomials a and b, reduce modulo p, and store
- * the result in r.  r could be a or b; a could be b.
- */
+
 int BN_GF2m_mod_mul_arr(BIGNUM *r, const BIGNUM *a, const BIGNUM *b,
                         const int p[], BN_CTX *ctx)
 {
@@ -484,7 +464,7 @@ int BN_GF2m_mod_mul(BIGNUM *r, const BIGNUM *a, const BIGNUM *b,
     return ret;
 }
 
-/* Square a, reduce the result mod p, and store it in a.  r could be a. */
+
 int BN_GF2m_mod_sqr_arr(BIGNUM *r, const BIGNUM *a, const int p[],
                         BN_CTX *ctx)
 {
@@ -542,12 +522,7 @@ int BN_GF2m_mod_sqr(BIGNUM *r, const BIGNUM *a, const BIGNUM *p, BN_CTX *ctx)
     return ret;
 }
 
-/*
- * Invert a, reduce modulo p, and store the result in r. r could be a. Uses
- * Modified Almost Inverse Algorithm (Algorithm 10) from Hankerson, D.,
- * Hernandez, J.L., and Menezes, A.  "Software Implementation of Elliptic
- * Curve Cryptography Over Binary Fields".
- */
+
 int BN_GF2m_mod_inv(BIGNUM *r, const BIGNUM *a, const BIGNUM *p, BN_CTX *ctx)
 {
     BIGNUM *b, *c = NULL, *u = NULL, *v = NULL, *tmp;
@@ -634,10 +609,7 @@ int BN_GF2m_mod_inv(BIGNUM *r, const BIGNUM *a, const BIGNUM *p, BN_CTX *ctx)
         for (i = 0; i < top; i++)
             cdp[i] = 0;
         c->top = top;
-        vdp = v->d;             /* It pays off to "cache" *->d pointers,
-                                 * because it allows optimizer to be more
-                                 * aggressive. But we don't have to "cache"
-                                 * p->d, because *p is declared 'const'... */
+        vdp = v->d;             
         while (1) {
             while (ubits && !(udp[0] & 1)) {
                 BN_ULONG u0, u1, b0, b1, mask;
@@ -704,8 +676,7 @@ int BN_GF2m_mod_inv(BIGNUM *r, const BIGNUM *a, const BIGNUM *p, BN_CTX *ctx)
     ret = 1;
 
  err:
-# ifdef BN_DEBUG                /* BN_CTX_end would complain about the
-                                 * expanded form */
+# ifdef BN_DEBUG                
     bn_correct_top(c);
     bn_correct_top(u);
     bn_correct_top(v);
@@ -742,10 +713,7 @@ int BN_GF2m_mod_inv_arr(BIGNUM *r, const BIGNUM *xx, const int p[],
 }
 
 # ifndef OPENSSL_SUN_GF2M_DIV
-/*
- * Divide y by x, reduce modulo p, and store the result in r. r could be x
- * or y, x could equal y.
- */
+
 int BN_GF2m_mod_div(BIGNUM *r, const BIGNUM *y, const BIGNUM *x,
                     const BIGNUM *p, BN_CTX *ctx)
 {
@@ -798,7 +766,7 @@ int BN_GF2m_mod_div(BIGNUM *r, const BIGNUM *y, const BIGNUM *x,
     if (v == NULL)
         goto err;
 
-    /* reduce x and y mod p */
+    
     if (!BN_GF2m_mod(u, y, p))
         goto err;
     if (!BN_GF2m_mod(a, x, p))
@@ -890,11 +858,7 @@ int BN_GF2m_mod_div_arr(BIGNUM *r, const BIGNUM *yy, const BIGNUM *xx,
     return ret;
 }
 
-/*
- * Compute the bth power of a, reduce modulo p, and store the result in r.  r
- * could be a. Uses simple square-and-multiply algorithm A.5.1 from IEEE
- * P1363.
- */
+
 int BN_GF2m_mod_exp_arr(BIGNUM *r, const BIGNUM *a, const BIGNUM *b,
                         const int p[], BN_CTX *ctx)
 {
@@ -964,10 +928,7 @@ int BN_GF2m_mod_exp(BIGNUM *r, const BIGNUM *a, const BIGNUM *b,
     return ret;
 }
 
-/*
- * Compute the square root of a, reduce modulo p, and store the result in r.
- * r could be a. Uses exponentiation as in algorithm A.4.1 from IEEE P1363.
- */
+
 int BN_GF2m_mod_sqrt_arr(BIGNUM *r, const BIGNUM *a, const int p[],
                          BN_CTX *ctx)
 {
@@ -996,12 +957,7 @@ int BN_GF2m_mod_sqrt_arr(BIGNUM *r, const BIGNUM *a, const int p[],
     return ret;
 }
 
-/*
- * Compute the square root of a, reduce modulo p, and store the result in r.
- * r could be a. This function calls down to the BN_GF2m_mod_sqrt_arr
- * implementation; this wrapper function is only provided for convenience;
- * for best performance, use the BN_GF2m_mod_sqrt_arr function.
- */
+
 int BN_GF2m_mod_sqrt(BIGNUM *r, const BIGNUM *a, const BIGNUM *p, BN_CTX *ctx)
 {
     int ret = 0;
@@ -1036,7 +992,7 @@ int BN_GF2m_mod_solve_quad_arr(BIGNUM *r, const BIGNUM *a_, const int p[],
     bn_check_top(a_);
 
     if (!p[0]) {
-        /* reduction mod 1 => return 0 */
+        
         BN_zero(r);
         return 1;
     }
@@ -1058,7 +1014,7 @@ int BN_GF2m_mod_solve_quad_arr(BIGNUM *r, const BIGNUM *a_, const int p[],
     }
 
     if (p[0] & 0x1) {           /* m is odd */
-        /* compute half-trace of a */
+        
         if (!BN_copy(z, a))
             goto err;
         for (j = 1; j <= (p[0] - 1) / 2; j++) {
@@ -1125,12 +1081,7 @@ int BN_GF2m_mod_solve_quad_arr(BIGNUM *r, const BIGNUM *a_, const int p[],
     return ret;
 }
 
-/*
- * Find r such that r^2 + r = a mod p.  r could be a. If no r exists returns
- * 0. This function calls down to the BN_GF2m_mod_solve_quad_arr
- * implementation; this wrapper function is only provided for convenience;
- * for best performance, use the BN_GF2m_mod_solve_quad_arr function.
- */
+
 int BN_GF2m_mod_solve_quad(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
                            BN_CTX *ctx)
 {
@@ -1170,7 +1121,7 @@ int BN_GF2m_poly2arr(const BIGNUM *a, int p[], int max)
 
     for (i = a->top - 1; i >= 0; i--) {
         if (!a->d[i])
-            /* skip word if a->d[i] == 0 */
+            
             continue;
         mask = BN_TBIT;
         for (j = BN_BITS2 - 1; j >= 0; j--) {

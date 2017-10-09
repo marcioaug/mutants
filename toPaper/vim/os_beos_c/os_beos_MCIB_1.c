@@ -1,12 +1,4 @@
-/* vi:set ts=8 sts=4 sw=4 noet:
- *
- * VIM - Vi IMproved	by Bram Moolenaar
- *		 BeBox port Copyright 1997 by Olaf Seibert.
- *
- * Do ":help uganda"  in Vim to read copying and usage conditions.
- * Do ":help credits" in Vim to see a list of people who contributed.
- * See README.txt for an overview of the Vim source code.
- */
+
 /*
  * os_beos.c  Additional stuff for BeOS (rest is in os_unix.c)
  */
@@ -22,7 +14,7 @@
 
 #if USE_THREAD_FOR_INPUT_WITH_TIMEOUT
 
-#ifdef PROTO	    /* making prototypes on Unix */
+#ifdef PROTO	    
 #define sem_id int
 #define thread_id int
 #endif
@@ -74,11 +66,7 @@ beos_cleanup_read_thread(void)
 
 #endif
 
-/*
- * select() emulation. Hopefully, in DR9 there will be something
- * useful supplied by the system. ... Alas, not. Not in AAPR, nor
- * in PR or even PR2... R3 then maybe? I don't think so!
- */
+
 
     int
 beos_select(int nbits,
@@ -95,10 +83,7 @@ beos_select(int nbits,
 	return 0;
     }
 #if 0
-    /*
-     * This does not seem to work either. Reads here are not supposed to
-     * block indefinitely, yet they do. This is most annoying.
-     */
+    
     if (FD_ISSET(0, rbits)) {
 	char cbuf[1];
 	int count;
@@ -128,10 +113,7 @@ beos_select(int nbits,
     {
 	int acquired;
 
-	/*
-	 * Is this the first time through?
-	 * Then start up the thread and initialise the semaphores.
-	 */
+	
 	if (character_present == 0) {
 	    character_present = create_sem(0, "vim character_present");
 	    character_wanted = create_sem(1, "vim character_wanted");
@@ -144,7 +126,7 @@ beos_select(int nbits,
 	/* timeout == NULL means "indefinitely" */
 	if (timeout) {
 	    tmo = timeout->tv_sec * 1e6 + timeout->tv_usec;
-	    /* 0 means "don't wait, which is impossible to do exactly. */
+	    
 	    if (tmo == 0)
 		tmo = 1.0;
 	}
@@ -180,10 +162,7 @@ beos_select(int nbits,
 	     * the thread and maybe remember the character.
 	     */
 	    kill(read_thread_id, SIGUSR1);
-	    /*
-	     *	If some other error occurred, don't hang now.
-	     * (We will most likely hang later anyway...)
-	     */
+	    
 	    if (acquired == B_TIMED_OUT)
 		acquire_sem(character_present);
 	    if (charcount > 0) {

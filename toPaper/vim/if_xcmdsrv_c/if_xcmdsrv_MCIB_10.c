@@ -1,15 +1,4 @@
-/* vi:set ts=8 sts=4 sw=4 noet:
- *
- * VIM - Vi IMproved	by Bram Moolenaar
- * X command server by Flemming Madsen
- *
- * Do ":help uganda"  in Vim to read copying and usage conditions.
- * Do ":help credits" in Vim to see a list of people who contributed.
- * See README.txt for an overview of the Vim source code.
- *
- * if_xcmdsrv.c: Functions for passing commands through an X11 display.
- *
- */
+
 
 #include "vim.h"
 #include "version.h"
@@ -29,27 +18,7 @@
  * Adapted for use in Vim by Flemming Madsen. Protocol changed to that of tk 4
  */
 
-/*
- * Copyright (c) 1989-1993 The Regents of the University of California.
- * All rights reserved.
- *
- * Permission is hereby granted, without written agreement and without
- * license or royalty fees, to use, copy, modify, and distribute this
- * software and its documentation for any purpose, provided that the
- * above copyright notice and the following two paragraphs appear in
- * all copies of this software.
- *
- * IN NO EVENT SHALL THE UNIVERSITY OF CALIFORNIA BE LIABLE TO ANY PARTY FOR
- * DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING OUT
- * OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF THE UNIVERSITY OF
- * CALIFORNIA HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * THE UNIVERSITY OF CALIFORNIA SPECIFICALLY DISCLAIMS ANY WARRANTIES,
- * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
- * AND FITNESS FOR A PARTICULAR PURPOSE.  THE SOFTWARE PROVIDED HEREUNDER IS
- * ON AN "AS IS" BASIS, AND THE UNIVERSITY OF CALIFORNIA HAS NO OBLIGATION TO
- * PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
- */
+
 
 
 /*
@@ -64,18 +33,16 @@
 
 typedef struct PendingCommand
 {
-    int	    serial;	/* Serial number expected in result. */
+    int	    serial;	
     int	    code;	/* Result Code. 0 is OK */
-    char_u  *result;	/* String result for command (malloc'ed).
-			 * NULL means command still pending. */
+    char_u  *result;	
     struct PendingCommand *nextPtr;
 			/* Next in list of all outstanding commands.
 			 * NULL means end of list. */
 } PendingCommand;
 
 static PendingCommand *pendingCommands = NULL;
-				/* List of all commands currently
-				 * being waited for. */
+				
 
 /*
  * The information below is used for communication between processes
@@ -152,10 +119,7 @@ static PendingCommand *pendingCommands = NULL;
  * these;  unknown options are ignored.
  */
 
-/*
- * Maximum size property that can be read at one time by
- * this module:
- */
+
 
 #define MAX_PROP_WORDS 100000
 
@@ -182,9 +146,7 @@ typedef struct x_cmdqueue x_queue_T;
 /* dummy node, header for circular queue */
 static x_queue_T head = {NULL, 0, NULL, NULL};
 
-/*
- * Forward declarations for procedures defined later in this file:
- */
+
 
 static Window	LookupName(Display *dpy, char_u *name, int delete, char_u **loose);
 static int	SendInit(Display *dpy);
@@ -207,7 +169,7 @@ static Atom	registryProperty = None;
 static Atom	vimProperty = None;
 static int	got_x_error = FALSE;
 
-static char_u	*empty_prop = (char_u *)"";	/* empty GetRegProp() result */
+static char_u	*empty_prop = (char_u *)"";	
 
 /*
  * Associate an ASCII name with Vim.  Try real hard to get a unique one.
@@ -215,7 +177,7 @@ static char_u	*empty_prop = (char_u *)"";	/* empty GetRegProp() result */
  */
     int
 serverRegisterName(
-    Display	*dpy,		/* display to register with */
+    Display	*dpy,		
     char_u	*name)		/* the name that will be used as a base */
 {
     int		i;
@@ -265,13 +227,7 @@ DoRegisterName(Display *dpy, char_u *name)
 	    return -2;
     }
 
-    /*
-     * Make sure the name is unique, and append info about it to
-     * the registry property.  It's important to lock the server
-     * here to prevent conflicting changes to the registry property.
-     * WARNING: Do not step through this while debugging, it will hangup the X
-     * server!
-     */
+    
     XGrabServer(dpy);
     w = LookupName(dpy, name, FALSE, NULL);
     if (w != (Window)0)
@@ -298,7 +254,7 @@ DoRegisterName(Display *dpy, char_u *name)
 	    XFlush(dpy);
 	    return -1;
 	}
-	(void)LookupName(dpy, name, /*delete=*/TRUE, NULL);
+	(void)LookupName(dpy, name, TRUE, NULL);
     }
     sprintf((char *)propInfo, "%x %.*s", (int_u)commWindow,
 						       MAX_NAME_LENGTH, name);
@@ -331,15 +287,14 @@ DoRegisterName(Display *dpy, char_u *name)
  */
     void
 serverChangeRegisteredWindow(
-    Display	*dpy,		/* Display to register with */
+    Display	*dpy,		
     Window	newwin)		/* Re-register to this ID */
 {
     char_u	propInfo[MAX_NAME_LENGTH + 20];
 
     commWindow = newwin;
 
-    /* Always call SendInit() here, to make sure commWindow is marked as a Vim
-     * window. */
+    
     if (SendInit(dpy) < 0)
 	return;
 
@@ -349,7 +304,7 @@ serverChangeRegisteredWindow(
     DeleteAnyLingerer(dpy, newwin);
     if (serverName != NULL)
     {
-	/* Reinsert name if we was already registered */
+	
 	(void)LookupName(dpy, serverName, /*delete=*/TRUE, NULL);
 	sprintf((char *)propInfo, "%x %.*s",
 		(int_u)newwin, MAX_NAME_LENGTH, serverName);
@@ -361,29 +316,24 @@ serverChangeRegisteredWindow(
 }
 #endif
 
-/*
- * Send to an instance of Vim via the X display.
- * Returns 0 for OK, negative for an error.
- */
+
     int
 serverSendToVim(
     Display	*dpy,			/* Where to send. */
-    char_u	*name,			/* Where to send. */
+    char_u	*name,			
     char_u	*cmd,			/* What to send. */
-    char_u	**result,		/* Result of eval'ed expression */
+    char_u	**result,		
     Window	*server,		/* Actual ID of receiving app */
-    Bool	asExpr,			/* Interpret as keystrokes or expr ? */
+    Bool	asExpr,			
     int		timeout,		/* seconds to wait or zero */
-    Bool	localLoop,		/* Throw away everything but result */
+    Bool	localLoop,		
     int		silent)			/* don't complain about no server */
 {
     Window	    w;
     char_u	    *property;
     int		    length;
     int		    res;
-    static int	    serial = 0;	/* Running count of sent commands.
-				 * Used to give each command a
-				 * different serial number. */
+    static int	    serial = 0;	
     PendingCommand  pending;
     char_u	    *loosename = NULL;
 
@@ -398,7 +348,7 @@ serverSendToVim(
 	    return -1;
     }
 
-    /* Execute locally if no display or target is ourselves */
+    
     if (dpy == NULL || (serverName != NULL && STRICMP(name, serverName) == 0))
 	return sendToLocalVim(cmd, asExpr, result);
 
@@ -413,7 +363,7 @@ serverSendToVim(
     while (TRUE)
     {
 	w = LookupName(dpy, name, FALSE, &loosename);
-	/* Check that the window is hot */
+	
 	if (w != None)
 	{
 	    if (!WindowValid(dpy, w))
@@ -437,11 +387,7 @@ serverSendToVim(
     if (server != NULL)
 	*server = w;
 
-    /*
-     * Send the command to target interpreter by appending it to the
-     * comm window in the communication window.
-     * Length must be computed exactly!
-     */
+    
 #ifdef FEAT_MBYTE
     length = STRLEN(name) + STRLEN(p_enc) + STRLEN(cmd) + 14;
 #else
@@ -463,7 +409,7 @@ if (name == loosename)
     serial++;
     sprintf((char *)property + length, "%c-r %x %d",
 						0, (int_u)commWindow, serial);
-    /* Add length of what "-r %x %d" resulted in, skipping the NUL. */
+    
     length += STRLEN(property + length + 1) + 1;
 
     res = AppendPropCarefully(dpy, w, commProperty, property, length + 1);
@@ -477,11 +423,7 @@ if (name == loosename)
     if (!asExpr) /* There is no answer for this - Keys are sent async */
 	return 0;
 
-    /*
-     * Register the fact that we're waiting for a command to
-     * complete (this is needed by SendEventProc and by
-     * AppendErrorProc to pass back the command's results).
-     */
+    
     pending.serial = serial;
     pending.code = 0;
     pending.result = NULL;
@@ -523,9 +465,7 @@ WaitForPend(void *p)
     return pending->result != NULL;
 }
 
-/*
- * Return TRUE if window "w" exists and has a "Vim" property on it.
- */
+
     static int
 WindowValid(Display *dpy, Window w)
 {
@@ -604,7 +544,7 @@ ServerWait(
 	check_due_timer();
 #endif
 
-	/* Just look out for the answer without calling back into Vim */
+	
 	if (localLoop)
 	{
 #ifndef HAVE_SELECT
@@ -648,9 +588,7 @@ serverGetVimNames(Display *dpy)
 	    return NULL;
     }
 
-    /*
-     * Read the registry property.
-     */
+    
     if (GetRegProp(dpy, &regProp, &numItems, TRUE) == FAIL)
 	return NULL;
 
@@ -682,9 +620,7 @@ serverGetVimNames(Display *dpy)
     return ga.ga_data;
 }
 
-/* ----------------------------------------------------------
- * Reply stuff
- */
+
 
     static struct ServerReply *
 ServerReplyFind(Window w, enum ServerReplyOp op)
@@ -740,10 +676,7 @@ serverStrToWin(char_u *str)
     return (Window)id;
 }
 
-/*
- * Send a reply string (notification) to client with id "name".
- * Return -1 if the window is invalid.
- */
+
     int
 serverSendReply(char_u *name, char_u *str)
 {
@@ -792,12 +725,7 @@ WaitForReply(void *p)
     return ServerReplyFind(*w, SROP_Find) != NULL;
 }
 
-/*
- * Wait for replies from id (win)
- * When "timeout" is non-zero wait up to this many seconds.
- * Return 0 and the malloc'ed string when a reply is available.
- * Return -1 if the window becomes invalid while waiting.
- */
+
     int
 serverReadReply(
     Display	*dpy,
@@ -834,10 +762,7 @@ serverReadReply(
     return -1;
 }
 
-/*
- * Check for replies from id (win).
- * Return TRUE and a non-malloc'ed string if there is.  Else return FALSE.
- */
+
     int
 serverPeekReply(Display *dpy, Window win, char_u **str)
 {
@@ -864,10 +789,7 @@ SendInit(Display *dpy)
 {
     XErrorHandler old_handler;
 
-    /*
-     * Create the window used for communication, and set up an
-     * event handler for it.
-     */
+    
     old_handler = XSetErrorHandler(x_error_check);
     got_x_error = FALSE;
 
@@ -892,7 +814,7 @@ SendInit(Display *dpy)
 	XUngrabServer(dpy);
     }
 
-    /* Make window recognizable as a vim window */
+    
     XChangeProperty(dpy, commWindow, vimProperty, XA_STRING,
 		    8, PropModeReplace, (char_u *)VIM_VERSION_SHORT,
 			(int)STRLEN(VIM_VERSION_SHORT) + 1);
@@ -917,9 +839,9 @@ SendInit(Display *dpy)
  */
     static Window
 LookupName(
-    Display	*dpy,	    /* Display whose registry to check. */
+    Display	*dpy,	    
     char_u	*name,	    /* Name of a server. */
-    int		delete,	    /* If non-zero, delete info about name. */
+    int		delete,	    
     char_u	**loose)    /* Do another search matching -999 if not found
 			       Return result here if a match is found */
 {
@@ -928,9 +850,7 @@ LookupName(
     long_u	numItems;
     int_u	returnValue;
 
-    /*
-     * Read the registry property.
-     */
+    
     if (GetRegProp(dpy, &regProp, &numItems, FALSE) == FAIL)
 	return 0;
 
@@ -938,7 +858,7 @@ LookupName(
      * Scan the property for the desired name.
      */
     returnValue = (int_u)None;
-    entry = NULL;	/* Not needed, but eliminates compiler warning. */
+    entry = NULL;	
     for (p = regProp; (long_u)(p - regProp) < numItems; )
     {
 	entry = p;
@@ -1000,19 +920,11 @@ LookupName(
     return (Window)returnValue;
 }
 
-/*
- * Delete any lingering occurrence of window id.  We promise that any
- * occurrence is not ours since it is not yet put into the registry (by us)
- *
- * This is necessary in the following scenario:
- * 1. There is an old windowid for an exit'ed vim in the registry
- * 2. We get that id for our commWindow but only want to send, not register.
- * 3. The window will mistakenly be regarded valid because of own commWindow
- */
+
     static void
 DeleteAnyLingerer(
     Display	*dpy,	/* Display whose registry to check. */
-    Window	win)	/* Window to remove */
+    Window	win)	
 {
     char_u	*regProp, *entry = NULL;
     char_u	*p;
@@ -1025,7 +937,7 @@ DeleteAnyLingerer(
     if (GetRegProp(dpy, &regProp, &numItems, FALSE) == FAIL)
 	return;
 
-    /* Scan the property for the window id.  */
+    
     for (p = regProp; (long_u)(p - regProp) < numItems; )
     {
 	if (*p != 0)
@@ -1065,12 +977,7 @@ DeleteAnyLingerer(
 	XFree(regProp);
 }
 
-/*
- * Read the registry property.  Delete it when it's formatted wrong.
- * Return the property in "regPropp".  "empty_prop" is used when it doesn't
- * exist yet.
- * Return OK when successful.
- */
+
     static int
 GetRegProp(
     Display	*dpy,
@@ -1100,7 +1007,7 @@ GetRegProp(
 
     if (actualType == None)
     {
-	/* No prop yet. Logically equal to the empty list */
+	
 	*numItemsp = 0;
 	*regPropp = empty_prop;
 	return OK;
@@ -1120,19 +1027,12 @@ GetRegProp(
 }
 
 
-/*
- * This procedure is invoked by the various X event loops throughout Vims when
- * a property changes on the communication window.  This procedure reads the
- * property and enqueues command requests and responses. If immediate is true,
- * it runs the event immediatly instead of enqueuing it. Immediate can cause
- * unintended behavior and should only be used for code that blocks for a
- * response.
- */
+
     void
 serverEventProc(
     Display	*dpy,
     XEvent	*eventPtr,	/* Information about event. */
-    int		immediate)	/* Run event immediately. Should mostly be 0. */
+    int		immediate)	
 {
     char_u	*propInfo;
     int		result, actualFormat;
@@ -1156,7 +1056,7 @@ serverEventProc(
 				&actualFormat, &numItems, &bytesAfter,
 				&propInfo);
 
-    /* If the property doesn't exist or is improperly formed then ignore it. */
+    
     if (result != Success || actualType != XA_STRING || actualFormat != 8)
     {
 	if (propInfo != NULL)
@@ -1180,7 +1080,7 @@ save_in_queue(char_u *propInfo, long_u len)
 
     node = (x_queue_T *)alloc(sizeof(x_queue_T));
     if (node == NULL)
-	return;	    /* out of memory */
+	return;	    
     node->propInfo = propInfo;
     node->len = len;
 
@@ -1190,7 +1090,7 @@ save_in_queue(char_u *propInfo, long_u len)
 	head.prev = &head;
     }
 
-    /* insert node at tail of queue */
+    
     node->next = &head;
     node->prev = head.prev;
     head.prev->next = node;
@@ -1206,7 +1106,7 @@ server_parse_messages(void)
     x_queue_T	*node;
 
     if (!X_DISPLAY)
-	return; /* cannot happen? */
+	return; 
     while (head.next != NULL && head.next != &head)
     {
 	node = head.next;
@@ -1227,16 +1127,12 @@ server_waiting(void)
     return head.next != NULL && head.next != &head;
 }
 
-/*
- * Prases a single clientserver message. A single message may contain multiple
- * commands.
- * "propInfo" will be freed.
- */
+
     static void
 server_parse_message(
     Display	*dpy,
     char_u	*propInfo, /* A string containing 0 or more X commands */
-    long_u	numItems)  /* The size of propInfo in bytes. */
+    long_u	numItems)  
 {
     char_u	*p;
     int		code;
@@ -1249,12 +1145,7 @@ server_parse_message(
      */
     for (p = propInfo; (long_u)(p - propInfo) < numItems; )
     {
-	/*
-	 * Ignore leading NULs; each command or result starts with a
-	 * NUL so that no matter how badly formed a preceding command
-	 * is, we'll be able to tell that a new command/result is
-	 * starting.
-	 */
+	
 	if (*p == 0)
 	{
 	    p++;
@@ -1297,7 +1188,7 @@ server_parse_message(
 			else
 			{
 			    p = serial = end + 1;
-			    clientWindow = resWindow; /* Remember in global */
+			    clientWindow = resWindow; 
 			}
 			break;
 		    case 'n':
@@ -1349,7 +1240,7 @@ server_parse_message(
 			reply.ga_len = 10 + STRLEN(serial);
 #endif
 
-			/* Evaluate the expression and return the result. */
+			
 			if (res != NULL)
 			    ga_concat(&reply, res);
 			else
@@ -1414,10 +1305,7 @@ server_parse_message(
 	    if (!gotSerial)
 		continue;
 
-	    /*
-	     * Give the result information to anyone who's
-	     * waiting for it.
-	     */
+	    
 	    for (pcPtr = pendingCommands; pcPtr != NULL; pcPtr = pcPtr->nextPtr)
 	    {
 		if (serial != pcPtr->serial || pcPtr->result != NULL)
@@ -1493,12 +1381,7 @@ server_parse_message(
 	}
 	else
 	{
-	    /*
-	     * Didn't recognize this thing.  Just skip through the next
-	     * null character and try again.
-	     * Even if we get an 'r'(eply) we will throw it away as we
-	     * never specify (and thus expect) one
-	     */
+	    
 	    while (*p != 0)
 		p++;
 	    p++;
@@ -1515,11 +1398,11 @@ server_parse_message(
  */
     static int
 AppendPropCarefully(
-    Display	*dpy,		/* Display on which to operate. */
+    Display	*dpy,		
     Window	window,		/* Window whose property is to be modified. */
-    Atom	property,	/* Name of property. */
+    Atom	property,	
     char_u	*value,		/* Characters  to append to property. */
-    int		length)		/* How much to append */
+    int		length)		
 {
     XErrorHandler old_handler;
 
@@ -1543,10 +1426,7 @@ x_error_check(Display *dpy UNUSED, XErrorEvent *error_event UNUSED)
     return 0;
 }
 
-/*
- * Check if "str" looks like it had a serial number appended.
- * Actually just checks if the name ends in a digit.
- */
+
     static int
 IsSerialName(char_u *str)
 {

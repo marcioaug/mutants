@@ -47,7 +47,7 @@
 # include <fileextd.h>
 #else /* USE_FILEEXTD */
 /* VC 8 or earlier. */
-# if defined(_MSC_VER)  (_MSC_VER < 1500)
+# if defined(_MSC_VER)  ( < 1500)
 #  ifdef ENABLE_STUB_IMPL
 #   define STUB_IMPL
 #  else

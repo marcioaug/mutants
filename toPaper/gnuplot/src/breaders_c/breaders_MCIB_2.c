@@ -2,7 +2,7 @@
 static char *RCSid() { return RCSid("$Id: breaders.c,v 1.13 2014/05/09 22:14:11 broeker Exp $"); }
 #endif
 
-/* GNUPLOT - breaders.c */
+
 
 /*[
  * Copyright 2004  Petr Mikulik
@@ -38,7 +38,7 @@ static char *RCSid() { return RCSid("$Id: breaders.c,v 1.13 2014/05/09 22:14:11 
  * to the extent permitted by applicable law.
 ]*/
 
-/* AUTHOR : Petr Mikulik */
+
 
 /*
  * Readers to set up binary data file information for particular formats.
@@ -49,12 +49,10 @@ static char *RCSid() { return RCSid("$Id: breaders.c,v 1.13 2014/05/09 22:14:11 
 #include "alloc.h"
 #include "misc.h"
 
-/*
- * Reader for the ESRF Header File format files (EDF / EHF).
- */
+
 
 /* Inside datafile.c, but kept hidden. */
-extern int df_no_bin_cols;	/* cols to read */
+extern int df_no_bin_cols;	
 extern df_endianess_type df_bin_file_endianess;
 extern TBOOLEAN df_matrix_file, df_binary_file;
 extern void *df_pixeldata;
@@ -62,12 +60,12 @@ extern void *df_pixeldata;
 /* Reader for the ESRF Header File format files (EDF / EHF).
  */
 
-/* gen_table4 */
+
 struct gen_table4 {
     const char *key;
     int value;
     short signum; /* 0..unsigned, 1..signed, 2..float or double */
-    short sajzof; /* sizeof on 32bit architecture */
+    short sajzof; 
 };
  
 /* Exactly like lookup_table_nth from tables.c, but for gen_table4 instead
@@ -80,7 +78,7 @@ lookup_table4_nth(const struct gen_table4 *tbl, const char *search_str)
     while (tbl[++k].key)
 	if (tbl[k].key && !strncmp(search_str, tbl[k].key, strlen(tbl[k].key)))
 	    return k;
-    return -1; /* not found */
+    return -1; 
 }
 
 static const struct gen_table4 edf_datatype_table[] =
@@ -96,14 +94,14 @@ static const struct gen_table4 edf_datatype_table[] =
     { "FloatValue",	DF_FLOAT,   2, 4 },
     { "DoubleValue",	DF_DOUBLE,  2, 8 },
     { "Float",		DF_FLOAT,   2, 4 }, /* Float and FloatValue are synonyms */
-    { "Double",		DF_DOUBLE,  2, 8 }, /* Double and DoubleValue are synonyms */
+    { "Double",		DF_DOUBLE,  2, 8 }, 
     { NULL, -1, -1, -1 }
 };
 
 static const struct gen_table edf_byteorder_table[] =
 {
     { "LowByteFirst",	DF_LITTLE_ENDIAN }, /* little endian */
-    { "HighByteFirst",	DF_BIG_ENDIAN },    /* big endian */
+    { "HighByteFirst",	DF_BIG_ENDIAN },    
     { NULL, -1 }
 };
 
@@ -111,9 +109,9 @@ static const struct gen_table edf_byteorder_table[] =
  * the file.
  */
 enum EdfRasterAxes {
-    EDF_RASTER_AXES_XrightYdown,	/* matricial format: rows, columns */
+    EDF_RASTER_AXES_XrightYdown,	
     EDF_RASTER_AXES_XrightYup		/* cartesian coordinate system */
-    /* other 6 combinations not available (not needed until now) */
+    
 };
 
 static const struct gen_table edf_rasteraxes_table[] =
@@ -134,7 +132,7 @@ edf_findInHeader ( const char* header, const char* key )
 
     if (!value_ptr) 
 	return NULL;
-    /* an edf line is "key     = value ;" */
+    
     value_ptr = 1 + strchr(value_ptr + strlen(key), '=');
     while (isspace((unsigned char)*value_ptr)) 
 	value_ptr++;
@@ -153,7 +151,7 @@ edf_filetype_function(void)
     fp = loadpath_fopen(df_filename, "rb");
     if (!fp)
 	os_error(NO_CARET, "Can't open data file \"%s\"", df_filename);
-    /* read header: it is a multiple of 512 B ending by "}\n" */
+    
     while (header_size == 0 || strncmp(&header[header_size-2],"}\n",2)) {
 	int header_size_prev = header_size;
 	header_size += 512;
@@ -163,14 +161,14 @@ edf_filetype_function(void)
 	    header = gp_realloc(header, header_size+1, "EDF header");
 	header[header_size_prev] = 0; /* protection against empty file */
 	k = fread(header+header_size_prev, 512, 1, fp);
-	if (k == 0) { /* protection against indefinite loop */
+	if (k == 0) { 
 	    free(header);
 	    os_error(NO_CARET, "Damaged EDF header of %s: not multiple of 512 B.\n", df_filename);
 	}
 	header[header_size] = 0; /* end of string: protection against strstr later on */
     }
     fclose(fp);
-    /* make sure there is a binary record structure for each image */
+    
     if (df_num_bin_records < 1)
 	df_add_binary_records(1-df_num_bin_records, DF_CURRENT_RECORDS); /* otherwise put here: number of images (records) from this file */
     if ((p = edf_findInHeader(header, "EDF_BinaryFileName"))) {
@@ -183,7 +181,7 @@ edf_filetype_function(void)
 	else
 	    df_bin_record[0].scan_skip[0] = 0;
     } else
-	df_bin_record[0].scan_skip[0] = header_size; /* skip header */
+	df_bin_record[0].scan_skip[0] = header_size; 
     /* set default values */
     df_bin_record[0].scan_dir[0] = 1;
     df_bin_record[0].scan_dir[1] = -1;
@@ -195,7 +193,7 @@ edf_filetype_function(void)
     df_set_skip_after(1,0);
     df_no_use_specs = 1;
     use_spec[0].column = 1;
-    /* now parse the header */
+    
     if ((p = edf_findInHeader(header, "Dim_1")))
 	df_bin_record[0].scan_dim[0] = atoi(p);
     if ((p = edf_findInHeader(header, "Dim_2")))
@@ -216,9 +214,7 @@ edf_filetype_function(void)
 	if (k >= 0)
 	    df_bin_file_endianess = edf_byteorder_table[k].value;
     }
-    /* Origin vs center: EDF specs allows only Center, but it does not hurt if
-       Origin is supported as well; however, Center rules if both specified.
-    */
+    
     if ((p = edf_findInHeader(header, "Origin_1"))) {
 	df_bin_record[0].scan_cen_or_ori[0] = atof(p);
 	df_bin_record[0].scan_trans = DF_TRANSLATE_VIA_ORIGIN;
@@ -249,7 +245,7 @@ edf_filetype_function(void)
 		df_bin_record[0].cart_scan[0] = DF_SCAN_POINT;
 		df_bin_record[0].cart_scan[1] = DF_SCAN_LINE;
 		break;
-	    default: /* also EDF_RASTER_AXES_XrightYdown */
+	    default: 
 		df_bin_record[0].scan_dir[0] = 1;
 		df_bin_record[0].scan_dir[1] = -1;
 		df_bin_record[0].cart_scan[0] = DF_SCAN_POINT;
@@ -311,7 +307,7 @@ gd_filetype_function(int filetype)
     FILE *fp;
     unsigned int M, N;
 
-    /* free previous image, if any */
+    
     if (im) {
 	gdImageDestroy(im);
 	im = NULL;
@@ -341,7 +337,7 @@ break;
     if (!im)
 	int_error(NO_CARET, "libgd doesn't recognize the format of \"%s\"", df_filename);
 
-    /* check on image properties and complain if we can't handle them */
+    
     M = im->sx;
     N = im->sy;
     FPRINTF((stderr,"This is a %u X %u %s image\n",M,N,
@@ -389,7 +385,7 @@ df_libgd_get_pixel(int i, int j, int component)
     case 3:	/* FIXME? Supposedly runs from 0-127 rather than 0-255 */
 		alpha = 2 * gdTrueColorGetAlpha(pixel);
 		return (255-alpha);
-    default:	return 0; /* shouldn't happen */
+    default:	return 0; 
     }
 }
 

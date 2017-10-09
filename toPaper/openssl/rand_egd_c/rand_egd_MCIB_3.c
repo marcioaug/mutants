@@ -1,11 +1,4 @@
-/*
- * Copyright 2000-2017 The OpenSSL Project Authors. All Rights Reserved.
- *
- * Licensed under the OpenSSL license (the "License").  You may not use
- * this file except in compliance with the License.  You can obtain a copy
- * in the file LICENSE in the source distribution or at
- * https://www.openssl.org/source/license.html
- */
+
 
 #include <openssl/opensslconf.h>
 #ifdef OPENSSL_NO_EGD
@@ -52,10 +45,10 @@ int RAND_egd_bytes(const char *path, int bytes)
 #  ifndef NO_SYS_UN_H
 #  else
 struct sockaddr_un {
-    short sun_family;           /* AF_UNIX */
+    short sun_family;           
     char sun_path[108];         /* path name (gag) */
 };
-#  endif                         /* NO_SYS_UN_H */
+#  endif                         
 #  include <string.h>
 #  include <errno.h>
 
@@ -81,7 +74,7 @@ int RAND_query_egd_bytes(const char *path, unsigned char *buf, int bytes)
         return -1;
     setbuf(fp, NULL);
 
-    /* Try to connect */
+    
     for ( ; ; ) {
         if (connect(fd, (struct sockaddr *)&addr, i) == 0)
             break;
@@ -110,7 +103,7 @@ int RAND_query_egd_bytes(const char *path, unsigned char *buf, int bytes)
         }
     }
 
-    /* Make request, see how many bytes we can get back. */
+    
     tempbuf[0] = 1;
     tempbuf[1] = bytes;
     if (fwrite(tempbuf, sizeof(char), 2, fp) != 2 || fflush(fp) == EOF)
@@ -124,7 +117,7 @@ int RAND_query_egd_bytes(const char *path, unsigned char *buf, int bytes)
     if (mybuffer)
         buf = tempbuf;
 
-    /* Read bytes. */
+    
     i = fread(buf, sizeof(char), numbytes, fp);
     if (i < numbytes)
         goto err;

@@ -1,11 +1,4 @@
-/*
- * Copyright 1999-2016 The OpenSSL Project Authors. All Rights Reserved.
- *
- * Licensed under the OpenSSL license (the "License").  You may not use
- * this file except in compliance with the License.  You can obtain a copy
- * in the file LICENSE in the source distribution or at
- * https://www.openssl.org/source/license.html
- */
+
 
 /*
  * Why BIO_s_log?
@@ -28,7 +21,7 @@
 # include <opcdef.h>
 # include <descrip.h>
 # include <lib$routines.h>
-# include <starlet.h>
+
 
 # if __INITIAL_POINTER_SIZE && defined _ANSI_C_SOURCE
 #  if __INITIAL_POINTER_SIZE == 64
@@ -37,9 +30,8 @@
 void *_malloc32(__size_t);
 #   pragma pointer_size restore
 #  endif                        /* __INITIAL_POINTER_SIZE == 64 */
-# endif                         /* Some compiler options may mask the declaration of "_malloc32". */
-/* __INITIAL_POINTER_SIZE && defined
-                                 * _ANSI_C_SOURCE */
+# endif                         
+# include <starlet.h>
 #elif defined(OPENSSL_SYS_NETWARE)
 # define NO_SYSLOG
 #elif (!defined(MSDOS) || defined(WATT32)) && !defined(OPENSSL_SYS_VXWORKS) && !defined(NO_SYSLOG)
@@ -87,7 +79,7 @@ static void xcloselog(BIO *bp);
 
 static const BIO_METHOD methods_slg = {
     BIO_TYPE_MEM, "syslog",
-    /* TODO: Convert to new style write function */
+    
     bwrite_conv,
     slg_write,
     NULL,
@@ -271,10 +263,7 @@ static void xsyslog(BIO *bp, int priority, const char *string)
         evtype = EVENTLOG_INFORMATION_TYPE;
         break;
     default:
-        /*
-         * Should never happen, but set it
-         * as error anyway.
-         */
+        
         evtype = EVENTLOG_ERROR_TYPE;
         break;
     }
@@ -312,7 +301,7 @@ static void xsyslog(BIO *bp, int priority, const char *string)
 #   pragma pointer_size 32
 #   define OPCDEF_TYPE __char_ptr32
 #   define OPCDEF_MALLOC _malloc32
-#  else                         /* __INITIAL_POINTER_SIZE == 64 */
+#  else                         
 #   define OPCDEF_TYPE char *
 #   define OPCDEF_MALLOC OPENSSL_malloc
 #  endif                        /* __INITIAL_POINTER_SIZE == 64 [else] */
@@ -321,7 +310,7 @@ static void xsyslog(BIO *bp, int priority, const char *string)
 
 #  if __INITIAL_POINTER_SIZE == 64
 #   pragma pointer_size restore
-#  endif                        /* __INITIAL_POINTER_SIZE == 64 */
+#  endif                        
 
     char buf[10240];
     unsigned int len;
@@ -384,7 +373,7 @@ static void xcloselog(BIO *bp)
 {
 }
 
-# else                          /* Unix/Watt32 */
+# else                          
 
 static void xopenlog(BIO *bp, char *name, int level)
 {
@@ -405,6 +394,6 @@ static void xcloselog(BIO *bp)
     closelog();
 }
 
-# endif                         /* Unix */
+# endif                         
 
 #endif                          /* NO_SYSLOG */

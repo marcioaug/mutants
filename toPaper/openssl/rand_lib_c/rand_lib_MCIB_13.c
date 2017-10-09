@@ -1,11 +1,4 @@
-/*
- * Copyright 1995-2017 The OpenSSL Project Authors. All Rights Reserved.
- *
- * Licensed under the OpenSSL license (the "License").  You may not use
- * this file except in compliance with the License.  You can obtain a copy
- * in the file LICENSE in the source distribution or at
- * https://www.openssl.org/source/license.html
- */
+
 
 #include <stdio.h>
 #include <time.h>
@@ -28,12 +21,7 @@ RAND_BYTES_BUFFER rand_bytes;
 int rand_fork_count;
 
 #ifdef OPENSSL_RAND_SEED_RDTSC
-/*
- * IMPORTANT NOTE:  It is not currently possible to use this code
- * because we are not sure about the amount of randomness it provides.
- * Some SP900 tests have been run, but there is internal skepticism.
- * So for now this code is not used.
- */
+
 # error "RDTSC enabled?  Should not be possible!"
 
 /*
@@ -66,7 +54,7 @@ int rand_read_cpu(RAND_poll_cb rand_add, void *arg)
 {
     char buff[RANDOMNESS_NEEDED];
 
-    /* If RDSEED is available, use that. */
+    
     if ((OPENSSL_ia32cap_P[2] & (1 << 18)) != 0) {
         if (OPENSSL_ia32_rdseed_bytes(buff, sizeof(buff)) == sizeof(buff)) {
             rand_add(arg, buff, (int)sizeof(buff), sizeof(buff));
@@ -87,19 +75,7 @@ int rand_read_cpu(RAND_poll_cb rand_add, void *arg)
 #endif
 
 
-/*
- * DRBG has two sets of callbacks; we only discuss the "entropy" one
- * here.  When the DRBG needs additional randomness bits (called entropy
- * in the NIST document), it calls the get_entropy callback which fills in
- * a pointer and returns the number of bytes. When the DRBG is finished with
- * the buffer, it calls the cleanup_entropy callback, with the value of
- * the buffer that the get_entropy callback filled in.
- *
- * Get entropy from the system, via RAND_poll if needed.  The |entropy|
- * is the bits of randomness required, and is expected to fit into a buffer
- * of |min_len|..|max__len| size.  We assume we're getting high-quality
- * randomness from the system, and that |min_len| bytes will do.
- */
+
 size_t drbg_entropy_from_system(RAND_DRBG *drbg,
                                 unsigned char **pout,
                                 int entropy, size_t min_len, size_t max_len)
@@ -115,7 +91,7 @@ size_t drbg_entropy_from_system(RAND_DRBG *drbg,
     randomness = drbg->secure ? OPENSSL_secure_malloc(drbg->size)
                                     : OPENSSL_malloc(drbg->size);
 
-    /* If we don't have enough, try to get more. */
+    
     CRYPTO_THREAD_write_lock(rand_bytes.lock);
     for (i = RAND_POLL_RETRIES; rand_bytes.curr < min_len && --i >= 0; ) {
         CRYPTO_THREAD_unlock(rand_bytes.lock);
@@ -128,7 +104,7 @@ size_t drbg_entropy_from_system(RAND_DRBG *drbg,
         min_len = rand_bytes.curr;
     if (min_len != 0) {
         memcpy(randomness, rand_bytes.buff, min_len);
-        /* Update amount left and shift it down. */
+        
         rand_bytes.curr -= min_len;
         if (rand_bytes.curr != 0)
             memmove(rand_bytes.buff, &rand_bytes.buff[min_len], rand_bytes.curr);
@@ -153,7 +129,7 @@ size_t drbg_entropy_from_parent(RAND_DRBG *drbg,
     randomness = drbg->secure ? OPENSSL_secure_malloc(drbg->size)
                                     : OPENSSL_malloc(drbg->size);
 
-    /* Get random from parent, include our state as additional input. */
+    
     st = RAND_DRBG_generate(drbg->parent, randomness, min_len, 0,
                             (unsigned char *)drbg, sizeof(*drbg));
     if (st == 0) {
@@ -287,7 +263,7 @@ const RAND_METHOD *RAND_get_rand_method(void)
 #ifndef OPENSSL_NO_ENGINE
         ENGINE *e;
 
-        /* If we have an engine that can do RAND, use it. */
+        
         if ((e = ENGINE_get_default_RAND()) != NULL
                 && (tmp_meth = ENGINE_get_RAND(e)) != NULL) {
             funct_ref = e;
@@ -320,11 +296,7 @@ void RAND_add(const void *buf, int num, double randomness)
         meth->add(buf, num, randomness);
 }
 
-/*
- * This function is not part of RAND_METHOD, so if we're not using
- * the default method, then just call RAND_bytes().  Otherwise make
- * sure we're instantiated and use the private DRBG.
- */
+
 int RAND_priv_bytes(unsigned char *buf, int num)
 {
     const RAND_METHOD *meth = RAND_get_rand_method();

@@ -35,23 +35,7 @@
 
 #define PROXY_RETRY_TIMEOUT 60
 
-/**
- *
- * the proxy module is based on the fastcgi module
- *
- * 28.06.2004 Jan Kneschke     The first release
- * 01.07.2004 Evgeny Rodichev  Several bugfixes and cleanups
- *            - co-ordinate up- and downstream flows correctly (proxy_demux_response
- *              and proxy_handle_fdevent)
- *            - correctly transfer upstream http_response_status;
- *            - some unused structures removed.
- *
- * TODO:      - delay upstream read if write_queue is too large
- *              (to prevent memory eating, like in apache). Shoud be
- *              configurable).
- *            - persistent connection with upstream servers
- *            - HTTP/1.1
- */
+
 typedef enum {
 	PROXY_BALANCE_UNSET,
 	PROXY_BALANCE_FAIR,
@@ -102,12 +86,12 @@ typedef struct {
 	off_t wb_reqlen;
 
 	int fd; /* fd to the proxy process */
-	int fde_ndx; /* index into the fd-event buffer */
+	int fde_ndx; 
 
 	plugin_config conf;
 
 	connection *remote_conn;  /* dumb pointer */
-	plugin_data *plugin_data; /* dumb pointer */
+	plugin_data *plugin_data; 
 	data_array *ext;
 } handler_ctx;
 
@@ -189,9 +173,9 @@ SETDEFAULTS_FUNC(mod_proxy_set_defaults) {
 	size_t i = 0;
 
 	config_values_t cv[] = {
-		{ "proxy.server",              NULL, T_CONFIG_LOCAL, T_CONFIG_SCOPE_CONNECTION },       /* 0 */
+		{ "proxy.server",              NULL, T_CONFIG_LOCAL, T_CONFIG_SCOPE_CONNECTION },       
 		{ "proxy.debug",               NULL, T_CONFIG_SHORT, T_CONFIG_SCOPE_CONNECTION },       /* 1 */
-		{ "proxy.balance",             NULL, T_CONFIG_STRING, T_CONFIG_SCOPE_CONNECTION },      /* 2 */
+		{ "proxy.balance",             NULL, T_CONFIG_STRING, T_CONFIG_SCOPE_CONNECTION },      
 		{ "proxy.replace-http-host",   NULL, T_CONFIG_BOOLEAN, T_CONFIG_SCOPE_CONNECTION },     /* 3 */
 		{ NULL,                        NULL, T_CONFIG_UNSET, T_CONFIG_SCOPE_UNSET }
 	};
@@ -247,10 +231,7 @@ SETDEFAULTS_FUNC(mod_proxy_set_defaults) {
 				return HANDLER_ERROR;
 			}
 
-			/*
-			 * proxy.server = ( "<ext>" => ...,
-			 *                  "<ext>" => ... )
-			 */
+			
 
 			for (j = 0; j < da->value->used; j++) {
 				data_array *da_ext = (data_array *)da->value->data[j];
@@ -279,7 +260,7 @@ SETDEFAULTS_FUNC(mod_proxy_set_defaults) {
 					data_array *dfa;
 
 					config_values_t pcv[] = {
-						{ "host",              NULL, T_CONFIG_STRING, T_CONFIG_SCOPE_CONNECTION },      /* 0 */
+						{ "host",              NULL, T_CONFIG_STRING, T_CONFIG_SCOPE_CONNECTION },      
 						{ "port",              NULL, T_CONFIG_SHORT, T_CONFIG_SCOPE_CONNECTION },       /* 1 */
 						{ NULL,                NULL, T_CONFIG_UNSET, T_CONFIG_SCOPE_UNSET }
 					};
@@ -319,7 +300,7 @@ SETDEFAULTS_FUNC(mod_proxy_set_defaults) {
 						return HANDLER_ERROR;
 					}
 
-					/* if extension already exists, take it */
+					
 
 					if (NULL == (dfa = (data_array *)array_get_element(s->extensions, da_ext->key->ptr))) {
 						dfa = data_array_init();
@@ -383,7 +364,7 @@ static data_proxy * mod_proxy_extension_host_get(server *srv, connection *con, d
 			if (host->is_disabled) continue;
 
 			cur_max = generate_crc32c(CONST_BUF_LEN(con->uri.path)) +
-				generate_crc32c(CONST_BUF_LEN(host->host)) + /* we can cache this */
+				generate_crc32c(CONST_BUF_LEN(host->host)) + 
 				generate_crc32c(CONST_BUF_LEN(con->uri.authority));
 
 			if (debug) {
@@ -405,7 +386,7 @@ static data_proxy * mod_proxy_extension_host_get(server *srv, connection *con, d
 
 		break;
 	case PROXY_BALANCE_FAIR:
-		/* fair balancing */
+		
 		if (debug) {
 			log_error_write(srv, __FILE__, __LINE__,  "s",
 					"proxy - used fair balancing");
@@ -433,14 +414,14 @@ static data_proxy * mod_proxy_extension_host_get(server *srv, connection *con, d
 					"proxy - used round-robin balancing");
 		}
 
-		/* just to be sure */
+		
 		force_assert(extension->value->used < INT_MAX);
 
 		host = (data_proxy *)extension->value->data[0];
 
 		/* Use last_used_ndx from first host in list */
 		k = host->last_used_ndx;
-		ndx = k + 1; /* use next host after the last one */
+		ndx = k + 1; 
 		if (ndx < 0) ndx = 0;
 
 		/* Search first active host after last_used_ndx */
@@ -448,7 +429,7 @@ static data_proxy * mod_proxy_extension_host_get(server *srv, connection *con, d
 				&& (host = (data_proxy *)extension->value->data[ndx])->is_disabled ) ndx++;
 
 		if (ndx >= (int) extension->value->used) {
-			/* didn't found a higher id, wrap to the start */
+			
 			for (ndx = 0; ndx <= (int) k; ndx++) {
 				host = (data_proxy *)extension->value->data[ndx];
 				if (!host->is_disabled) break;
@@ -458,7 +439,7 @@ static data_proxy * mod_proxy_extension_host_get(server *srv, connection *con, d
 			if (host->is_disabled) ndx = -1;
 		}
 
-		/* Save new index for next round */
+		
 		((data_proxy *)extension->value->data[0])->last_used_ndx = ndx;
 
 		break;
@@ -490,7 +471,7 @@ static data_proxy * mod_proxy_extension_host_get(server *srv, connection *con, d
 						cur_max);
 			}
 
-			if ((last_max == ULONG_MAX) || /* first round */
+			if ((last_max == ULONG_MAX) || 
 				(cur_max > last_max)) {
 				last_max = cur_max;
 
@@ -516,7 +497,7 @@ static data_proxy * mod_proxy_extension_host_get(server *srv, connection *con, d
 		host->usage++;
 		return host;
 	} else {
-		/* no handler found */
+		
 		con->http_status = 503; /* Service Unavailable */
 		con->mode = DIRECT;
 
@@ -539,7 +520,7 @@ static void proxy_connection_close(server *srv, handler_ctx *hctx) {
 	handler_ctx_free(hctx);
 	con->plugin_ctx[p->id] = NULL;
 
-	/* finish response (if not already con->file_started, con->file_finished) */
+	
 	if (con->mode == p->id) {
 		http_response_backend_done(srv, con);
 	}
@@ -666,7 +647,7 @@ static int proxy_create_env(server *srv, handler_ctx *hctx) {
 
 	b = buffer_init();
 
-	/* request line */
+	
 	buffer_copy_string(b, get_http_method_name(con->request.http_method));
 	buffer_append_string_len(b, CONST_STR_LEN(" "));
 
@@ -691,7 +672,7 @@ static int proxy_create_env(server *srv, handler_ctx *hctx) {
 	}
 	proxy_set_header(con, "X-Forwarded-Proto", con->uri.scheme->ptr);
 
-	/* request header */
+	
 	for (i = 0; i < con->request.headers->used; i++) {
 		data_string *ds;
 
@@ -720,7 +701,7 @@ static int proxy_create_env(server *srv, handler_ctx *hctx) {
 	chunkqueue_append_buffer(hctx->wb, b);
 	buffer_free(b);
 
-	/* body */
+	
 
 	if (con->request.content_length) {
 		chunkqueue_append_chunkqueue(hctx->wb, con->request_content_queue);
@@ -744,7 +725,7 @@ static int proxy_response_parse(server *srv, connection *con, plugin_data *p, bu
 
 	UNUSED(srv);
 
-	/* [\r]\n -> [\0]\0 */
+	
 
 	buffer_copy_buffer(p->parse_response, in);
 
@@ -775,7 +756,7 @@ static int proxy_response_parse(server *srv, connection *con, plugin_data *p, bu
 		}
 
 		if (NULL == (value = strchr(s, ':'))) {
-			/* now we expect: "<key>: <value>\n" */
+			
 
 			continue;
 		}
@@ -839,7 +820,7 @@ static int proxy_demux_response(server *srv, handler_ctx *hctx) {
 	connection *con   = hctx->remote_conn;
 	int proxy_fd       = hctx->fd;
 
-	/* check how much we have to read */
+	
       if (hctx->conf.debug) {
 		log_error_write(srv, __FILE__, __LINE__, "sd",
 				"proxy - have to read:", b);
@@ -893,7 +874,7 @@ static int proxy_demux_response(server *srv, handler_ctx *hctx) {
 		}
 
 	      #if defined(_WIN32) || defined(__CYGWIN__)
-		if (0 == r) return 1; /* fin */
+		if (0 == r) return 1; 
 	      #endif
 
 		/* this should be catched by the b > 0 above */
@@ -914,7 +895,7 @@ static int proxy_demux_response(server *srv, handler_ctx *hctx) {
 		if (0 == con->file_started) {
 			char *c;
 
-			/* search for the \r\n\r\n in the string */
+			
 			if (NULL != (c = buffer_search_string_len(hctx->response, CONST_STR_LEN("\r\n\r\n")))) {
 				size_t hlen = c - hctx->response->ptr + 4;
 				size_t blen = buffer_string_length(hctx->response) - hlen;
@@ -924,7 +905,7 @@ static int proxy_demux_response(server *srv, handler_ctx *hctx) {
 #if 0
 				log_error_write(srv, __FILE__, __LINE__, "sb", "Header:", hctx->response_header);
 #endif
-				/* parse the response header */
+				
 				proxy_response_parse(srv, con, p, hctx->response_header);
 
 				con->file_started = 1;
@@ -938,11 +919,11 @@ static int proxy_demux_response(server *srv, handler_ctx *hctx) {
 				}
 				buffer_reset(hctx->response);
 			} else {
-				/* no luck, no header found */
+				
 				/*(reuse MAX_HTTP_REQUEST_HEADER as max size for response headers from backends)*/
 				if (buffer_string_length(hctx->response) > MAX_HTTP_REQUEST_HEADER) {
 					log_error_write(srv, __FILE__, __LINE__, "sb", "response headers too large for", con->uri.path);
-					con->http_status = 502; /* Bad Gateway */
+					con->http_status = 502; 
 					con->mode = DIRECT;
 					fin = 1;
 				}
@@ -956,7 +937,7 @@ static int proxy_demux_response(server *srv, handler_ctx *hctx) {
 			buffer_reset(hctx->response);
 		}
 	} else {
-		/* reading from upstream done */
+		
 		fin = 1;
 	}
 
@@ -1013,7 +994,7 @@ static handler_t proxy_write_request(server *srv, handler_ctx *hctx) {
 			case 1:
 				proxy_set_state(srv, hctx, PROXY_STATE_CONNECT);
 
-				/* connection is in progress, wait for an event and call getsockopt() below */
+				
 
 				fdevent_event_set(srv->ev, &(hctx->fde_ndx), hctx->fd, FDEVENT_OUT);
 
@@ -1024,7 +1005,7 @@ static handler_t proxy_write_request(server *srv, handler_ctx *hctx) {
 
 				return HANDLER_ERROR;
 			default:
-				/* everything is ok, go on */
+				
 				break;
 			}
 		} else {
@@ -1050,7 +1031,7 @@ static handler_t proxy_write_request(server *srv, handler_ctx *hctx) {
 			}
 		}
 
-		/* ok, we have the connection */
+		
 
 		proxy_set_state(srv, hctx, PROXY_STATE_PREPARE_WRITE);
 		/* fall through */
@@ -1060,7 +1041,7 @@ static handler_t proxy_write_request(server *srv, handler_ctx *hctx) {
 		fdevent_event_add(srv->ev, &(hctx->fde_ndx), hctx->fd, FDEVENT_IN);
 		proxy_set_state(srv, hctx, PROXY_STATE_WRITE);
 
-		/* fall through */
+		
 	case PROXY_STATE_WRITE:;
 		ret = srv->network_backend_write(srv, con, hctx->fd, hctx->wb, MAX_WRITE_LIMIT);
 
@@ -1070,7 +1051,7 @@ static handler_t proxy_write_request(server *srv, handler_ctx *hctx) {
 			log_error_write(srv, __FILE__, __LINE__, "ssd", "write failed:", strerror(errno), errno);
 
 			return HANDLER_ERROR;
-		} else if (-2 == ret) { /* remote close */
+		} else if (-2 == ret) { 
 			log_error_write(srv, __FILE__, __LINE__, "ssd", "write failed, remote connection close:", strerror(errno), errno);
 
 			return HANDLER_ERROR;
@@ -1085,7 +1066,7 @@ static handler_t proxy_write_request(server *srv, handler_ctx *hctx) {
 				/*(con->conf.stream_request_body & FDEVENT_STREAM_REQUEST)*/
 				if (!(con->conf.stream_request_body & FDEVENT_STREAM_REQUEST_POLLIN)) {
 					con->conf.stream_request_body |= FDEVENT_STREAM_REQUEST_POLLIN;
-					con->is_readable = 1; /* trigger optimistic read from client */
+					con->is_readable = 1; 
 				}
 			}
 			if (0 == wblen) {
@@ -1116,7 +1097,7 @@ static int mod_proxy_patch_connection(server *srv, connection *con, plugin_data 
 	PATCH(balance);
 	PATCH(replace_http_host);
 
-	/* skip the first, the global context */
+	
 	for (i = 1; i < srv->config_context->used; i++) {
 		data_config *dc = (data_config *)srv->config_context->data[i];
 		s = p->config_storage[i];
@@ -1124,7 +1105,7 @@ static int mod_proxy_patch_connection(server *srv, connection *con, plugin_data 
 		/* condition didn't match */
 		if (!config_check_cond(srv, con, dc)) continue;
 
-		/* merge config */
+		
 		for (j = 0; j < dc->value->used; j++) {
 			data_unset *du = dc->value->data[j];
 
@@ -1156,7 +1137,7 @@ static handler_t proxy_send_request(server *srv, handler_ctx *hctx) {
 				host->port,
 				hctx->fd);
 
-		/* disable this server */
+		
 		host->is_disabled = 1;
 		host->disable_ts = srv->cur_ts;
 
@@ -1176,7 +1157,7 @@ SUBREQUEST_FUNC(mod_proxy_handle_subrequest) {
 
 	if (NULL == hctx) return HANDLER_GO_ON;
 
-	/* not my job */
+	
 	if (con->mode != p->id) return HANDLER_GO_ON;
 
 	if ((con->conf.stream_response_body & FDEVENT_STREAM_RESPONSE_BUFMIN)
@@ -1185,7 +1166,7 @@ SUBREQUEST_FUNC(mod_proxy_handle_subrequest) {
 			fdevent_event_clr(srv->ev, &(hctx->fde_ndx), hctx->fd, FDEVENT_IN);
 		} else if (!(fdevent_event_get_interest(srv->ev, hctx->fd) & FDEVENT_IN)) {
 			/* optimistic read from backend, which might re-enable FDEVENT_IN */
-			handler_t rc = proxy_recv_response(srv, hctx); /*(might invalidate hctx)*/
+			handler_t rc = proxy_recv_response(srv, hctx); 
 			if (rc != HANDLER_GO_ON) return rc;            /*(unless HANDLER_GO_ON)*/
 		}
 	}
@@ -1193,8 +1174,7 @@ SUBREQUEST_FUNC(mod_proxy_handle_subrequest) {
 	if (0 == hctx->wb->bytes_in
 	    ? con->state == CON_STATE_READ_POST
 	    : hctx->wb->bytes_in < hctx->wb_reqlen) {
-		/*(64k - 4k to attempt to avoid temporary files
-		 * in conjunction with FDEVENT_STREAM_REQUEST_BUFMIN)*/
+		
 		if (hctx->wb->bytes_in - hctx->wb->bytes_out > 65536 - 4096
 		    && (con->conf.stream_request_body & FDEVENT_STREAM_REQUEST_BUFMIN)){
 			con->conf.stream_request_body &= ~FDEVENT_STREAM_REQUEST_POLLIN;
@@ -1235,7 +1215,7 @@ static handler_t proxy_recv_response(server *srv, handler_ctx *hctx) {
 			break;
 		case -1:
 			http_response_backend_error(srv, hctx->remote_conn);
-			/* fall through */
+			
 		case 1:
 			/* we are done */
 			proxy_connection_close(srv, hctx);
@@ -1254,29 +1234,25 @@ static handler_t proxy_handle_fdevent(server *srv, void *ctx, int revents) {
 	joblist_append(srv, con);
 
 	if (revents & FDEVENT_IN) {
-		handler_t rc = proxy_recv_response(srv,hctx);/*(might invalidate hctx)*/
+		handler_t rc = proxy_recv_response(srv,hctx);
 		if (rc != HANDLER_GO_ON) return rc;          /*(unless HANDLER_GO_ON)*/
 	}
 
 	if (revents & FDEVENT_OUT) {
-		return proxy_send_request(srv, hctx); /*(might invalidate hctx)*/
+		return proxy_send_request(srv, hctx); 
 	}
 
 	/* perhaps this issue is already handled */
 	if (revents & FDEVENT_HUP) {
 		if (hctx->state == PROXY_STATE_CONNECT) {
-			/* connect() -> EINPROGRESS -> HUP */
+			
 			proxy_send_request(srv, hctx); /*(might invalidate hctx)*/
 		} else if (con->file_started) {
-			/* drain any remaining data from kernel pipe buffers
-			 * even if (con->conf.stream_response_body
-			 *          & FDEVENT_STREAM_RESPONSE_BUFMIN)
-			 * since event loop will spin on fd FDEVENT_HUP event
-			 * until unregistered. */
+			
 			handler_t rc;
 			do {
 				rc = proxy_recv_response(srv,hctx);/*(might invalidate hctx)*/
-			} while (rc == HANDLER_GO_ON);             /*(unless HANDLER_GO_ON)*/
+			} while (rc == HANDLER_GO_ON);             
 			return rc; /* HANDLER_FINISHED or HANDLER_ERROR */
 		} else {
 			proxy_connection_close(srv, hctx);
@@ -1301,7 +1277,7 @@ static handler_t mod_proxy_check_extension(server *srv, connection *con, void *p
 
 	if (con->mode != DIRECT) return HANDLER_GO_ON;
 
-	/* Possibly, we processed already this request */
+	
 	if (con->file_started == 1) return HANDLER_GO_ON;
 
 	mod_proxy_patch_connection(srv, con, p);
@@ -1323,7 +1299,7 @@ static handler_t mod_proxy_check_extension(server *srv, connection *con, void *p
 
 		if (s_len < ct_len) continue;
 
-		/* check extension in the form "/proxy_pattern" */
+		
 		if (*(ext->key->ptr) == '/') {
 			if (strncmp(fn->ptr, ext->key->ptr, ct_len) == 0) {
 				extension = ext;
@@ -1345,7 +1321,7 @@ static handler_t mod_proxy_check_extension(server *srv, connection *con, void *p
 		return HANDLER_FINISHED;
 	}
 
-	/* found a server */
+	
 	{
 
 		/*
@@ -1353,7 +1329,7 @@ static handler_t mod_proxy_check_extension(server *srv, connection *con, void *p
 		 *
 		 */
 
-		/* init handler-context */
+		
 		handler_ctx *hctx;
 		hctx = handler_ctx_init();
 
@@ -1403,7 +1379,7 @@ TRIGGER_FUNC(mod_proxy_trigger) {
 
 			if (!s) continue;
 
-			/* get the extensions for all configs */
+			
 
 			for (k = 0; k < s->extensions->used; k++) {
 				data_array *extension = (data_array *)s->extensions->data[k];
@@ -1437,7 +1413,7 @@ int mod_proxy_plugin_init(plugin *p) {
 	p->init         = mod_proxy_init;
 	p->cleanup      = mod_proxy_free;
 	p->set_defaults = mod_proxy_set_defaults;
-	p->connection_reset        = mod_proxy_connection_reset; /* end of req-resp cycle */
+	p->connection_reset        = mod_proxy_connection_reset; 
 	p->handle_connection_close = mod_proxy_connection_reset; /* end of client connection */
 	p->handle_uri_clean        = mod_proxy_check_extension;
 	p->handle_subrequest       = mod_proxy_handle_subrequest;

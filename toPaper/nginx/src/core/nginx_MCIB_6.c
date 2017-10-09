@@ -1,8 +1,5 @@
 
-/*
- * Copyright (C) Igor Sysoev
- * Copyright (C) Nginx, Inc.
- */
+
 
 
 #include <ngx_config.h>
@@ -166,15 +163,15 @@ static ngx_core_module_t  ngx_core_module_ctx = {
 ngx_module_t  ngx_core_module = {
     NGX_MODULE_V1,
     &ngx_core_module_ctx,                  /* module context */
-    ngx_core_commands,                     /* module directives */
+    ngx_core_commands,                     
     NGX_CORE_MODULE,                       /* module type */
-    NULL,                                  /* init master */
+    NULL,                                  
     NULL,                                  /* init module */
-    NULL,                                  /* init process */
+    NULL,                                  
     NULL,                                  /* init thread */
-    NULL,                                  /* exit thread */
+    NULL,                                  
     NULL,                                  /* exit process */
-    NULL,                                  /* exit master */
+    NULL,                                  
     NGX_MODULE_V1_PADDING
 };
 
@@ -234,7 +231,7 @@ main(int argc, char *const *argv)
         return 1;
     }
 
-    /* STUB */
+    
 /*
      * init_cycle->log is required for signal handlers and
      * ngx_process_options()
@@ -266,9 +263,7 @@ main(int argc, char *const *argv)
         return 1;
     }
 
-    /*
-     * ngx_crc32_table_init() requires ngx_cacheline_size set in ngx_os_init()
-     */
+    
 
     if (ngx_crc32_table_init() != NGX_OK) {
         return 1;
@@ -675,7 +670,7 @@ ngx_exec_new_binary(ngx_cycle_t *cycle, char *const *argv)
 
 #if (NGX_SETPROCTITLE_USES_ENV)
 
-    /* allocate the spare 300 bytes for the new binary process title */
+    
 
     env[n++] = "SPARE=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
                "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
@@ -1352,7 +1347,7 @@ ngx_set_cpu_affinity(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
         n = 1;
     }
 
-    for ( /* void */ ; n < cf->args->nelts; n++) {
+    for (  ; n < cf->args->nelts; n++) {
 
         if (value[n].len > CPU_SETSIZE) {
             ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,
@@ -1430,7 +1425,7 @@ ngx_get_cpu_affinity(ngx_uint_t n)
             }
 
             if (i == CPU_SETSIZE && j == n) {
-                /* empty mask */
+                
                 return NULL;
             }
 
