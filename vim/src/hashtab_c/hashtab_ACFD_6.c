@@ -40,7 +40,6 @@ static long hash_count_perturb = 0;	/* count number of "misses" */
 #ifndef HT_DEBUG 
 #define PERTURB_SHIFT 5
 #endif
-int i = 1;
 
 static int hash_may_resize(hashtab_T *ht, int minitems);
 
