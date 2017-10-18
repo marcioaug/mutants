@@ -1,0 +1,246 @@
+/bin/sh -c 'SHELL=/bin/sh /bin/sh ./scripts/cfg_defs.sh .'
+Constructing sed-script help_files.sed
+sed	-e '/^#/d' -e '/^$/d' \
+	-e 's%\(.*\)=\(.*\@.*\)$%s=@\1@=\2=g%' \
+	-e 's%\(.*\)=\(http:.*\)$%s=@\1@=\2=g%' \
+	-e 's%\(.*\)=\(ftp:.*\)$%s=@\1@=\2=g%' \
+	-e 's%\(.*\)=\(.*\.html\)$%s=@\1@=\2=g%' \
+	help_files.tmp | tr '=' '"' > help_files.sed
+Appending interim-fix for existing html files to help_files.sed
+sed	-e '/^#/d' -e '/[:@]/d' -e '/^$/d' \
+	-e 's%\(.*\)=\(.*\.html\)$%s=\2=\2=g%' \
+	-e 's%\.html=%\\.html=%' \
+	help_files.tmp | tr '=' '"' >> help_files.sed
+if test -n ""; then echo "s%\\(\\\)*\%%g" >> help_files.sed; fi
+Creating LYHelp.h
+**********************************************
+
+       Help files will NOT be gzipped.
+
+**********************************************
+cd ./WWW/Library/Implementation && make  DESTDIR="" CC="gcc" LY_CFLAGS="-O2 " CPPFLAGS="-D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX" LYFLAGS=""
+make[1]: Entering directory '/home/marcioaug/Projects/marcioaug/lynx/WWW/Library/Implementation'
+gcc -DHAVE_CONFIG_H  -I../../.. -I../../../src -I../../.. -I../../../src  -I../../../WWW/Library/Implementation  -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2    -I../../../WWW/Library/Implementation/ -DACCESS_AUTH -c ../../../WWW/Library/Implementation/HTParse.c
+gcc -DHAVE_CONFIG_H  -I../../.. -I../../../src -I../../.. -I../../../src  -I../../../WWW/Library/Implementation  -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2    -I../../../WWW/Library/Implementation/ -DACCESS_AUTH -c ../../../WWW/Library/Implementation/HTAccess.c
+gcc -DHAVE_CONFIG_H  -I../../.. -I../../../src -I../../.. -I../../../src  -I../../../WWW/Library/Implementation  -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2    -I../../../WWW/Library/Implementation/ -DACCESS_AUTH -c ../../../WWW/Library/Implementation/HTTP.c
+gcc -DHAVE_CONFIG_H  -I../../.. -I../../../src -I../../.. -I../../../src  -I../../../WWW/Library/Implementation  -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2    -I../../../WWW/Library/Implementation/ -DACCESS_AUTH -c ../../../WWW/Library/Implementation/HTFile.c
+gcc -DHAVE_CONFIG_H  -I../../.. -I../../../src -I../../.. -I../../../src  -I../../../WWW/Library/Implementation  -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2    -I../../../WWW/Library/Implementation/ -DACCESS_AUTH -c ../../../WWW/Library/Implementation/HTBTree.c
+gcc -DHAVE_CONFIG_H  -I../../.. -I../../../src -I../../.. -I../../../src  -I../../../WWW/Library/Implementation  -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2    -I../../../WWW/Library/Implementation/ -DACCESS_AUTH -c ../../../WWW/Library/Implementation/HTFTP.c
+gcc -DHAVE_CONFIG_H  -I../../.. -I../../../src -I../../.. -I../../../src  -I../../../WWW/Library/Implementation  -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2    -I../../../WWW/Library/Implementation/ -DACCESS_AUTH -c ../../../WWW/Library/Implementation/HTTCP.c
+gcc -DHAVE_CONFIG_H  -I../../.. -I../../../src -I../../.. -I../../../src  -I../../../WWW/Library/Implementation  -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2    -I../../../WWW/Library/Implementation/ -DACCESS_AUTH -c ../../../WWW/Library/Implementation/SGML.c
+gcc -DHAVE_CONFIG_H  -I../../.. -I../../../src -I../../.. -I../../../src  -I../../../WWW/Library/Implementation  -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2    -I../../../WWW/Library/Implementation/ -DACCESS_AUTH -c ../../../WWW/Library/Implementation/HTMLDTD.c
+gcc -DHAVE_CONFIG_H  -I../../.. -I../../../src -I../../.. -I../../../src  -I../../../WWW/Library/Implementation  -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2    -I../../../WWW/Library/Implementation/ -DACCESS_AUTH -c ../../../WWW/Library/Implementation/HTChunk.c
+gcc -DHAVE_CONFIG_H  -I../../.. -I../../../src -I../../.. -I../../../src  -I../../../WWW/Library/Implementation  -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2    -I../../../WWW/Library/Implementation/ -DACCESS_AUTH -c ../../../WWW/Library/Implementation/HTPlain.c
+gcc -DHAVE_CONFIG_H  -I../../.. -I../../../src -I../../.. -I../../../src  -I../../../WWW/Library/Implementation  -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2    -I../../../WWW/Library/Implementation/ -DACCESS_AUTH -c ../../../WWW/Library/Implementation/HTMLGen.c
+gcc -DHAVE_CONFIG_H  -I../../.. -I../../../src -I../../.. -I../../../src  -I../../../WWW/Library/Implementation  -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2    -I../../../WWW/Library/Implementation/ -DACCESS_AUTH -c ../../../WWW/Library/Implementation/HTAtom.c
+gcc -DHAVE_CONFIG_H  -I../../.. -I../../../src -I../../.. -I../../../src  -I../../../WWW/Library/Implementation  -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2    -I../../../WWW/Library/Implementation/ -DACCESS_AUTH -c ../../../WWW/Library/Implementation/HTAnchor.c
+gcc -DHAVE_CONFIG_H  -I../../.. -I../../../src -I../../.. -I../../../src  -I../../../WWW/Library/Implementation  -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2    -I../../../WWW/Library/Implementation/ -DACCESS_AUTH -c ../../../WWW/Library/Implementation/HTStyle.c
+gcc -DHAVE_CONFIG_H  -I../../.. -I../../../src -I../../.. -I../../../src  -I../../../WWW/Library/Implementation  -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2    -I../../../WWW/Library/Implementation/ -DACCESS_AUTH -c ../../../WWW/Library/Implementation/HTList.c
+gcc -DHAVE_CONFIG_H  -I../../.. -I../../../src -I../../.. -I../../../src  -I../../../WWW/Library/Implementation  -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2    -I../../../WWW/Library/Implementation/ -DACCESS_AUTH -c -DVC=\"2.14\" ../../../WWW/Library/Implementation/HTString.c
+gcc -DHAVE_CONFIG_H  -I../../.. -I../../../src -I../../.. -I../../../src  -I../../../WWW/Library/Implementation  -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2    -I../../../WWW/Library/Implementation/ -DACCESS_AUTH -c -DVC=\"2.14\" ../../../WWW/Library/Implementation/HTRules.c
+gcc -DHAVE_CONFIG_H  -I../../.. -I../../../src -I../../.. -I../../../src  -I../../../WWW/Library/Implementation  -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2    -I../../../WWW/Library/Implementation/ -DACCESS_AUTH -c ../../../WWW/Library/Implementation/HTFormat.c
+gcc -DHAVE_CONFIG_H  -I../../.. -I../../../src -I../../.. -I../../../src  -I../../../WWW/Library/Implementation  -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2    -I../../../WWW/Library/Implementation/ -DACCESS_AUTH -c ../../../WWW/Library/Implementation/HTMIME.c
+gcc -DHAVE_CONFIG_H  -I../../.. -I../../../src -I../../.. -I../../../src  -I../../../WWW/Library/Implementation  -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2    -I../../../WWW/Library/Implementation/ -DACCESS_AUTH -c ../../../WWW/Library/Implementation/HTNews.c
+gcc -DHAVE_CONFIG_H  -I../../.. -I../../../src -I../../.. -I../../../src  -I../../../WWW/Library/Implementation  -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2    -I../../../WWW/Library/Implementation/ -DACCESS_AUTH -c ../../../WWW/Library/Implementation/HTGopher.c
+gcc -DHAVE_CONFIG_H  -I../../.. -I../../../src -I../../.. -I../../../src  -I../../../WWW/Library/Implementation  -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2    -I../../../WWW/Library/Implementation/ -DACCESS_AUTH -c ../../../WWW/Library/Implementation/HTTelnet.c
+gcc -DHAVE_CONFIG_H  -I../../.. -I../../../src -I../../.. -I../../../src  -I../../../WWW/Library/Implementation  -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2    -I../../../WWW/Library/Implementation/ -DACCESS_AUTH -c ../../../WWW/Library/Implementation/HTFinger.c
+gcc -DHAVE_CONFIG_H  -I../../.. -I../../../src -I../../.. -I../../../src  -I../../../WWW/Library/Implementation  -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2    -I../../../WWW/Library/Implementation/ -DACCESS_AUTH -c ../../../WWW/Library/Implementation/HTWSRC.c
+gcc -DHAVE_CONFIG_H  -I../../.. -I../../../src -I../../.. -I../../../src  -I../../../WWW/Library/Implementation  -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2    -I../../../WWW/Library/Implementation/ -DACCESS_AUTH -c ../../../WWW/Library/Implementation/HTAAUtil.c
+gcc -DHAVE_CONFIG_H  -I../../.. -I../../../src -I../../.. -I../../../src  -I../../../WWW/Library/Implementation  -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2    -I../../../WWW/Library/Implementation/ -DACCESS_AUTH -c ../../../WWW/Library/Implementation/HTAABrow.c
+gcc -DHAVE_CONFIG_H  -I../../.. -I../../../src -I../../.. -I../../../src  -I../../../WWW/Library/Implementation  -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2    -I../../../WWW/Library/Implementation/ -DACCESS_AUTH -c ../../../WWW/Library/Implementation/HTGroup.c
+gcc -DHAVE_CONFIG_H  -I../../.. -I../../../src -I../../.. -I../../../src  -I../../../WWW/Library/Implementation  -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2    -I../../../WWW/Library/Implementation/ -DACCESS_AUTH -c ../../../WWW/Library/Implementation/HTAAProt.c
+gcc -DHAVE_CONFIG_H  -I../../.. -I../../../src -I../../.. -I../../../src  -I../../../WWW/Library/Implementation  -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2    -I../../../WWW/Library/Implementation/ -DACCESS_AUTH -c ../../../WWW/Library/Implementation/HTAssoc.c
+gcc -DHAVE_CONFIG_H  -I../../.. -I../../../src -I../../.. -I../../../src  -I../../../WWW/Library/Implementation  -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2    -I../../../WWW/Library/Implementation/ -DACCESS_AUTH -c ../../../WWW/Library/Implementation/HTLex.c
+gcc -DHAVE_CONFIG_H  -I../../.. -I../../../src -I../../.. -I../../../src  -I../../../WWW/Library/Implementation  -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2    -I../../../WWW/Library/Implementation/ -DACCESS_AUTH -c ../../../WWW/Library/Implementation/HTUU.c
+gcc -DHAVE_CONFIG_H  -I../../.. -I../../../src -I../../.. -I../../../src  -I../../../WWW/Library/Implementation  -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2    -I../../../WWW/Library/Implementation/ -DACCESS_AUTH -c ../../../WWW/Library/Implementation/HTDOS.c
+ar -curvU ./libwww.a ./HTParse.o ./HTAccess.o ./HTTP.o ./HTFile.o	./HTBTree.o ./HTFTP.o ./HTTCP.o ./SGML.o ./HTMLDTD.o ./HTChunk.o ./HTPlain.o ./HTMLGen.o ./HTAtom.o ./HTAnchor.o ./HTStyle.o ./HTList.o ./HTString.o ./HTRules.o ./HTFormat.o  ./HTMIME.o ./HTNews.o  ./HTGopher.o ./HTTelnet.o ./HTFinger.o ./HTWSRC.o  ./HTAAUtil.o ./HTAABrow.o ./HTGroup.o ./HTAAProt.o ./HTAssoc.o  ./HTLex.o    ./HTUU.o ./HTDOS.o
+a - ./HTParse.o
+a - ./HTAccess.o
+a - ./HTTP.o
+a - ./HTFile.o
+a - ./HTBTree.o
+a - ./HTFTP.o
+a - ./HTTCP.o
+a - ./SGML.o
+a - ./HTMLDTD.o
+a - ./HTChunk.o
+a - ./HTPlain.o
+a - ./HTMLGen.o
+a - ./HTAtom.o
+a - ./HTAnchor.o
+a - ./HTStyle.o
+a - ./HTList.o
+a - ./HTString.o
+a - ./HTRules.o
+a - ./HTFormat.o
+a - ./HTMIME.o
+a - ./HTNews.o
+a - ./HTGopher.o
+a - ./HTTelnet.o
+a - ./HTFinger.o
+a - ./HTWSRC.o
+a - ./HTAAUtil.o
+a - ./HTAABrow.o
+a - ./HTGroup.o
+a - ./HTAAProt.o
+a - ./HTAssoc.o
+a - ./HTLex.o
+a - ./HTUU.o
+a - ./HTDOS.o
+ranlib ./libwww.a
+make[1]: Leaving directory '/home/marcioaug/Projects/marcioaug/lynx/WWW/Library/Implementation'
+cd ./src/chrtrans && make  DESTDIR="" CC="gcc" all SITE_DEFS="" BUILD_CFLAGS="-O2 " BUILD_CPPFLAGS="-D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -DHAVE_CONFIG_H" BUILD_LDFLAGS="-L/lib64" BUILD_LIBS="-lidn -lncurses" BUILD_CC="gcc"
+make[1]: Entering directory '/home/marcioaug/Projects/marcioaug/lynx/src/chrtrans'
+gcc -I../.. -I../../src -I../../src/chrtrans -I../../WWW/Library/Implementation -I../../   -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -DHAVE_CONFIG_H -O2  -c ./makeuctb.c
+gcc -I../.. -I../../src -I../../src/chrtrans -I../../WWW/Library/Implementation -I../../   -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -DHAVE_CONFIG_H -O2  -L/lib64 -L/lib64 -o makeuctb makeuctb.o  -lidn -lncurses
+./makeuctb ./cp1250_uni.tbl cp1250_uni.h
+makeuctb: windows-1250: translation map (_windows_1250).
+./makeuctb ./cp1251_uni.tbl cp1251_uni.h
+makeuctb: windows-1251: translation map (_windows_1251).
+./makeuctb ./cp1252_uni.tbl cp1252_uni.h
+makeuctb: windows-1252: translation map (_windows_1252).
+./makeuctb ./cp1253_uni.tbl cp1253_uni.h
+makeuctb: windows-1253: translation map (_windows_1253).
+./makeuctb ./cp1255_uni.tbl cp1255_uni.h
+makeuctb: windows-1255: translation map (_windows_1255).
+./makeuctb ./cp1256_uni.tbl cp1256_uni.h
+makeuctb: windows-1256: translation map (_windows_1256).
+./makeuctb ./cp1257_uni.tbl cp1257_uni.h
+makeuctb: windows-1257: translation map (_windows_1257).
+./makeuctb ./cp437_uni.tbl cp437_uni.h
+makeuctb: cp437: translation map (_cp437).
+./makeuctb ./cp737_uni.tbl cp737_uni.h
+makeuctb: cp737: translation map (_cp737).
+./makeuctb ./cp775_uni.tbl cp775_uni.h
+makeuctb: cp775: translation map (_cp775).
+./makeuctb ./cp850_uni.tbl cp850_uni.h
+makeuctb: cp850: translation map (_cp850).
+./makeuctb ./cp852_uni.tbl cp852_uni.h
+makeuctb: cp852: translation map (_cp852).
+./makeuctb ./cp857_uni.tbl cp857_uni.h
+makeuctb: cp857: translation map (_cp857).
+./makeuctb ./cp862_uni.tbl cp862_uni.h
+makeuctb: cp862: translation map (_cp862).
+./makeuctb ./cp864_uni.tbl cp864_uni.h
+makeuctb: cp864: translation map (_cp864).
+./makeuctb ./cp866_uni.tbl cp866_uni.h
+makeuctb: cp866: translation map (_cp866).
+./makeuctb ./cp866u_uni.tbl cp866u_uni.h
+makeuctb: cp866u: translation map (_cp866u).
+./makeuctb ./cp869_uni.tbl cp869_uni.h
+makeuctb: cp869: translation map (_cp869).
+./makeuctb ./def7_uni.tbl def7_uni.h
+makeuctb: us-ascii: default translation map ().
+./makeuctb ./dmcs_uni.tbl dmcs_uni.h
+makeuctb: dec-mcs: translation map (_dec_mcs).
+./makeuctb ./hp_uni.tbl hp_uni.h
+makeuctb: hp-roman8: translation map (_hp_roman8).
+./makeuctb ./iso01_uni.tbl iso01_uni.h
+makeuctb: iso-8859-1: translation map (_iso_8859_1).
+./makeuctb ./iso02_uni.tbl iso02_uni.h
+makeuctb: iso-8859-2: translation map (_iso_8859_2).
+./makeuctb ./iso03_uni.tbl iso03_uni.h
+makeuctb: iso-8859-3: translation map (_iso_8859_3).
+./makeuctb ./iso04_uni.tbl iso04_uni.h
+makeuctb: iso-8859-4: translation map (_iso_8859_4).
+./makeuctb ./iso05_uni.tbl iso05_uni.h
+makeuctb: iso-8859-5: translation map (_iso_8859_5).
+./makeuctb ./iso06_uni.tbl iso06_uni.h
+makeuctb: iso-8859-6: translation map (_iso_8859_6).
+./makeuctb ./iso07_uni.tbl iso07_uni.h
+makeuctb: iso-8859-7: translation map (_iso_8859_7).
+./makeuctb ./iso08_uni.tbl iso08_uni.h
+makeuctb: iso-8859-8: translation map (_iso_8859_8).
+./makeuctb ./iso09_uni.tbl iso09_uni.h
+makeuctb: iso-8859-9: translation map (_iso_8859_9).
+./makeuctb ./iso10_uni.tbl iso10_uni.h
+makeuctb: iso-8859-10: translation map (_iso_8859_10).
+./makeuctb ./iso13_uni.tbl iso13_uni.h
+makeuctb: iso-8859-13: translation map (_iso_8859_13).
+./makeuctb ./iso14_uni.tbl iso14_uni.h
+makeuctb: iso-8859-14: translation map (_iso_8859_14).
+./makeuctb ./iso15_uni.tbl iso15_uni.h
+makeuctb: iso-8859-15: translation map (_iso_8859_15).
+./makeuctb ./koi8r_uni.tbl koi8r_uni.h
+makeuctb: koi8-r: translation map (_koi8_r).
+./makeuctb ./koi8u_uni.tbl koi8u_uni.h
+makeuctb: koi8-u: translation map (_koi8_u).
+./makeuctb ./mac_uni.tbl mac_uni.h
+makeuctb: macintosh: translation map (_macintosh).
+./makeuctb ./mnem2_suni.tbl mnem2_suni.h
+makeuctb: mnemonic: translation map (_mnemonic).
+./makeuctb ./mnem_suni.tbl mnem_suni.h
+makeuctb: mnem: translation map (_mnem).
+./makeuctb ./next_uni.tbl next_uni.h
+makeuctb: next: translation map (_next).
+./makeuctb ./pt154_uni.tbl pt154_uni.h
+makeuctb: ptcp154: translation map (_ptcp154).
+./makeuctb ./rfc_suni.tbl rfc_suni.h
+makeuctb: mnemonic+ascii+0: translation map (_mnemonic_ascii_0).
+./makeuctb ./utf8_uni.tbl utf8_uni.h
+makeuctb: utf-8: translation map (_utf_8).
+./makeuctb ./viscii_uni.tbl viscii_uni.h
+makeuctb: viscii: translation map (_viscii).
+make[1]: Leaving directory '/home/marcioaug/Projects/marcioaug/lynx/src/chrtrans'
+cd ./src && make  DESTDIR="" CC="gcc" all CFLAGS="-O2 " CPPFLAGS="-D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX" LDFLAGS="-L/lib64" LIBS="-lidn -lncurses   " SITE_DEFS="" WWWINC=./WWW/Library/Implementation WWWLIB=".././WWW/Library/Implementation/libwww.a"
+make[1]: Entering directory '/home/marcioaug/Projects/marcioaug/lynx/src'
+Compiling Lynx sources
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYebcdic.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYClean.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYShowInfo.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYEdit.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYStrings.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYMail.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c HTAlert.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c GridText.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYGetFile.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYMain.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYMainLoop.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYCurses.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYBookmark.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYmktime.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYUtils.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYOptions.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYReadCFG.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYSearch.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYHistory.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYForms.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYPrint.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYrcFile.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYDownload.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYNews.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYKeymap.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c HTML.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c HTFWriter.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c HTInit.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c DefaultStyle.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYUpload.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYLeaks.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYexit.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYJump.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYList.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYCgi.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYTraversal.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYEditmap.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYCharSets.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYCharUtils.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYMap.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYCookie.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYStyle.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYHash.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYPrettySrc.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c TRSTable.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c parsdate.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c UCdomap.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c UCAux.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c UCAuto.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYSession.c
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -c LYLocal.c
+Linking and creating Lynx executable
+gcc -DHAVE_CONFIG_H  -DLOCALEDIR=\"/usr/local/share/locale\" -I. -I.. -Ichrtrans -I./chrtrans -I.. -I../src -I.././WWW/Library/Implementation    -D_GNU_SOURCE -D_DEFAULT_SOURCE -DLINUX -O2  -L/lib64 -o lynx  LYebcdic.o LYClean.o LYShowInfo.o LYEdit.o LYStrings.o LYMail.o HTAlert.o GridText.o LYGetFile.o LYMain.o LYMainLoop.o LYCurses.o LYBookmark.o LYmktime.o LYUtils.o LYOptions.o LYReadCFG.o LYSearch.o LYHistory.o LYForms.o LYPrint.o LYrcFile.o LYDownload.o LYNews.o LYKeymap.o HTML.o HTFWriter.o HTInit.o DefaultStyle.o LYUpload.o LYLeaks.o LYexit.o LYJump.o LYList.o LYCgi.o LYTraversal.o LYEditmap.o LYCharSets.o LYCharUtils.o LYMap.o LYCookie.o LYStyle.o LYHash.o LYPrettySrc.o TRSTable.o parsdate.o UCdomap.o UCAux.o UCAuto.o  LYSession.o LYLocal.o  .././WWW/Library/Implementation/libwww.a -lidn -lncurses    
+Copying Lynx executable into top-level directory
+rm -f ../lynx
+cp lynx ../
+Welcome to Lynx!
+make[1]: Leaving directory '/home/marcioaug/Projects/marcioaug/lynx/src'
+
