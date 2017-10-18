@@ -1,1 +1,0 @@
-gcc -c alloc.c -std=c99 -I . -I .. -I ../lib -I ../lib-src/ -I /usr/lib `pkg-config --cflags --libs gtk+-3.0`

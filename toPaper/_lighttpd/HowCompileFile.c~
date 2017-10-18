@@ -1,1 +1,0 @@
-gcc -DHAVE_CONFIG_H -DHAVE_VERSION_H -DLIBRARY_DIR="\"/usr/local/lib\"" -DSBIN_DIR="\"/usr/local/sbin\"" -I. -I..   -D_REENTRANT -D__EXTENSIONS__  -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGE_FILES -c -o array.o array.c
